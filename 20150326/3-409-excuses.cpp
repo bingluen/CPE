@@ -7,13 +7,15 @@ using namespace std;
 
 int getNum(char keyword[][100], const int &numkey, char *excuses);
 
+char* toupperString(char *);
+
 int main()
 {
     int numKey, numExcuses, numTimes = 0;
     while(cin >> numKey >> numExcuses)
     {
         cin.ignore();
-        char keyword[20][100], excuses[20][200], temp[100];
+		char keyword[20][100] = { '\0' }, excuses[20][200] = { '\0' }, temp[200] = { '\0' };
         int count[20] = {0};
         for(int i = 0; i < numKey; i++)
         {
@@ -21,23 +23,14 @@ int main()
             cin.getline(*(keyword + i), 100, '\n');
         }
 
-
         for(int i = 0; i < numExcuses; i++)
         {
-            int size;
             cin.getline(*(excuses+i), 200, '\n');
             memcpy(temp, (excuses+i), 200);
             count[i] = getNum(keyword, numKey, temp);
         }
 
         
-        /*check input
-        
-        for(int i = 0; i < numExcuses; i++)
-        {
-            cout << *(excuses+i) << endl;
-        }
-        */
 
         printf("\nExcuse Set #%d\n", ++numTimes);
 
@@ -51,7 +44,7 @@ int main()
         for(int i = 0; i < numExcuses; i++)
         {
             if(count[i] == max)
-                printf("count = %d, %s", count[i], *(excuses+i));
+                printf("%s\n", *(excuses+i));
         }
         
     }
@@ -61,22 +54,40 @@ int main()
 int getNum(char keyword[][100], const int &numkey, char *excuses)
 {
     int count = 0;
-    cout << endl << excuses << endl;
-    cout << "\t";
-    for(size_t i = 0; i < numkey; i++)
-    {
-        char *sPtr = strtok(excuses, " .?\'\"!&\n\t");
-
-        while(sPtr != NULL)
-        {
-            cout << " " << sPtr << endl;
-            if(!strcmp(sPtr, keyword[i]))
-                count++;
-            
-            sPtr = strtok(NULL, " .?\'\"!&\n\t");
-        }
-
-    }
-
+	char *sPtr = strtok(excuses, " .?\'\"!&\n\t");
+	
+	while(sPtr != NULL)
+	{
+		for (int i = 0; i < numkey; i++)
+		{
+			if (!strcmp(sPtr, keyword[i]) || !strcmp(sPtr, toupperString(keyword[i])))
+			{
+				count++;
+				break;
+			}
+		}
+		sPtr = strtok(NULL, " .?\'\"!&\n\t");
+	}
     return count;
+}
+
+char* toupperString(char *string)
+{
+	char *upperString = (char *)malloc((strlen(string)+1) * sizeof(char));
+
+	for (size_t i = 0; i < strlen(string); i++)
+	{
+		if (string[i] >= 'a' && string[i] <= 'z')
+		{
+			upperString[i] = 'A' + (string[i] - 'a');
+		} 
+		else
+		{
+			upperString[i] = string[i];
+		}
+	}
+
+	upperString[strlen(string)] = '\0';
+
+	return upperString;
 }
